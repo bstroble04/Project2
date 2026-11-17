@@ -1,122 +1,175 @@
-# FIN 43900 Labs 18 & 19 — Investor Skills and Legend Panel
+# FIN 43900 Project 2 — Investment Management Application
 
-This project combines my Lab 18 Warren Buffett investor skill with my Lab 19 Legend Panel. It uses SEC EDGAR 10-K facts only: Python retrieves and calculates the financial values, while the Buffett, Benjamin Graham, and Michael Burry frameworks interpret the same printed results. It is a learning demonstration, not investment advice, and does not use FAskills software, paid data, stock prices, or price targets.
+This repository contains my FIN 43900 Project 2 application for a fictional
+**$50 million university scholarship endowment**. The application evaluates
+historical ETF-based portfolio allocations against the documented mandate and
+clearly separates calculated results from evidence that has not yet been
+verified.
 
-## Project 2 — Scholarship Endowment Application
+**AI-use and educational disclosure:** AI assisted with code development,
+debugging, organization, and documentation. I remain responsible for reviewing
+the calculations, evidence, policy assumptions, and final investment judgment.
+This is a course project for educational purposes, not investment advice, an
+offer, or a recommendation to buy or sell securities. Historical estimates are
+not forecasts or guarantees.
 
-`project2_app.py` is a separate Streamlit dashboard for the FIN 43900 Project 2
-$50 million scholarship-endowment mandate. It reads the committed `prices.csv`
-file for BIL, IEF, AGG, VTI, and VXUS; calculates equal-weight and
-inverse-volatility baselines; and searches long-only 5% allocations that meet the
-4% BIL reserve and the 6% net target under an explicitly displayed planning-cost
-assumption.
+## Mandate and current committee position
 
-With all 60 returns and a 0-bps planning-cost input, the constrained calculation
-reproduces the allocation reported in `lab15-notes.md`: 70% BIL, 0% IEF, 0% AGG,
-15% VTI, and 15% VXUS. A nonzero planning-cost input can change that allocation,
-because the historical gross return must then exceed 6% by the modeled cost.
+The endowment mandate is documented in [lab13.md](lab13.md) and
+[lab15-notes.md](lab15-notes.md):
 
-It never treats missing evidence as a pass: five-day liquidity, ETF look-through
-issuer exposure, ETF derivative exposure, turnover, and verified cost evidence
-remain **UNVERIFIED** until supporting evidence is added. The dashboard includes
-interactive estimation-window, cost, return-estimate, return-target, reserve, and
-planning ETF-cap stresses. It also uses a DGS10 ALFRED-vintage committee-review
-gate documented in `project2_point_in_time_signal.md`; it is a prospective
-date-level rule, not a backtest or automatic-trading rule.
+- $50 million endowment; 10-year horizon; $2 million annual scholarship need.
+- 6% annual return objective, **net of costs**.
+- Minimum 4% reserve allocation in BIL.
+- Minimum 85% five-business-day liquidity.
+- Maximum 10% exposure to any single company issuer.
+- No borrowing, shorting, or derivatives.
+- Annual rebalancing and a 25% turnover threshold.
 
-Fund sponsor sources, expense-ratio treatment, point-in-time boundaries, and
-reproduction steps are documented in `project2_data_lineage.md`. The app keeps
-five-day liquidity, ETF look-through issuer exposure, and underlying derivatives
-as **UNVERIFIED** until dated, source-matched evidence is loaded.
+The app models long-only portfolios from BIL, IEF, AGG, VTI, and VXUS. It can
+verify weights, direct long-only positions, reserve allocation, modeled net
+return, planning ETF cap, and turnover when a prior approved allocation is
+entered. It does **not** pass liquidity, ETF look-through company exposure, or
+underlying-fund derivative exposure without dated, source-matched evidence.
 
-Run it from a clean environment:
+The current default constrained scenario uses 10 bps of separate planning
+implementation costs and produces:
+
+| ETF | Weight |
+| --- | ---: |
+| BIL | 70% |
+| IEF | 0% |
+| AGG | 0% |
+| VTI | 20% |
+| VXUS | 10% |
+
+| Metric | Modeled result |
+| --- | ---: |
+| Gross expected return | 6.1547% |
+| Net expected return | 6.0547% |
+| Annualized volatility | 4.5804% |
+| BIL reserve | 70.00% |
+
+This is not an adoption recommendation. Required liquidity, issuer,
+underlying-derivative, turnover, and verified implementation-cost evidence still
+limits the strategy to further review. The default DGS10 point-in-time gate also
+requires committee review before authorizing a rebalance.
+
+## Portfolio calculations
+
+[project2_engine.py](project2_engine.py) reads the committed
+[prices.csv](prices.csv) file of monthly adjusted ETF prices. It calculates:
+
+- equal-weight and inverse-volatility baselines;
+- historical annualized arithmetic return estimates, volatility, correlations,
+  reserve allocation, largest ETF allocation, and worst monthly return;
+- a long-only 5% grid constrained portfolio;
+- net expected return after a separately displayed 0- or 10-bps planning
+  implementation-cost scenario;
+- portfolio turnover when a prior allocation is supplied.
+
+The 60-month, 0-bps historical calculation reproduces the allocation reported
+in [lab15-notes.md](lab15-notes.md): 70% BIL, 15% VTI, and 15% VXUS. The 10-bps
+scenario changes the constrained allocation because gross expected return must
+clear the 6% objective after the modeled cost.
+
+Published fund expense ratios are documented separately in
+[project2_data_lineage.md](project2_data_lineage.md). They are not subtracted a
+second time from adjusted-price returns, which generally already reflect fund
+operating expenses. The app's implementation-cost input is therefore separate
+from fund expenses and from turnover-related trading costs.
+
+## Point-in-time governance signal
+
+[project2_signal.py](project2_signal.py) uses the ALFRED vintage of DGS10 for a
+selected annual rebalance decision date. It selects the latest nonmissing
+observation dated on or before that vintage date, never substitutes current
+revised FRED data, and quarantines unavailable data as `UNVERIFIED`.
+
+The proposed governance rule is a committee-review gate, not a backtest or an
+automatic trade rule:
+
+- DGS10 at or above the user-selected threshold requires committee review before
+  a rebalance may be authorized.
+- A missing ALFRED vintage results in `DO NOT AUTHORIZE REBALANCE`.
+- The ALFRED graph export verifies availability at the date level; it does not
+  establish an intraday release timestamp.
+
+The full rule, data card, and limitations are in
+[project2_point_in_time_signal.md](project2_point_in_time_signal.md).
+
+## Evidence gates and source lineage
+
+[project2_fund_evidence.py](project2_fund_evidence.py) indexes official sponsor
+sources for BIL, IEF, AGG, VTI, and VXUS. The app displays sponsor identity,
+official URL, source-date note, published expense ratio, and evidence status.
+
+Current or later-viewed holdings are not treated as information known on
+September 30, 2026. Five-day liquidity and company issuer-cap checks remain
+`UNVERIFIED` until the project includes dated, availability-verified full
+holdings and a portfolio-size liquidity analysis. Direct ETF-share positions are
+distinguished from possible underlying-fund derivative exposure.
+
+For sources, definitions, transformations, exclusions, revision/availability
+limits, licensing considerations, and reproduction details, see
+[project2_data_lineage.md](project2_data_lineage.md).
+
+## Interactive stress testing
+
+[project2_app.py](project2_app.py) provides Streamlit controls for:
+
+- 60-month or 36-month historical estimation windows;
+- 0- or 10-bps planning implementation costs;
+- parallel expected-return estimate changes;
+- return target, BIL reserve, and planning ETF-cap scenarios;
+- a prior approved allocation for turnover calculation;
+- DGS10 decision date and review threshold.
+
+Each scenario recalculates portfolio weights, gross/net return, volatility,
+mandate statuses, change versus the 60-month/0-bps base, and committee stop
+conditions. It also reproduces the documented 36-month stability and 7% target
+scenarios from [lab15-notes.md](lab15-notes.md).
+
+## Windows setup
+
+Open PowerShell in the repository root.
 
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+```
+
+If PowerShell blocks activation for the current terminal only:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
+```
+
+## Launch the Project 2 app
+
+```powershell
 streamlit run project2_app.py
 ```
 
-Run all offline tests:
+## Run offline tests
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
 
-The existing `app.py` below remains the independent Lab 18/19 SEC Legend Panel.
+The suite covers 60-month and 10-bps baseline reproduction, 36-month and 7%
+stress cases, infeasible optimization, point-in-time leakage and missing-data
+handling, mandate evidence gates, turnover, issuer-cap logic with controlled test
+fixtures, and the preserved SEC-app tests.
 
-## Project files
+## Validation and Locked Changed-Input Record
 
-- [Lab 19 report](lab19.md)
-- [Streamlit Legend Panel](app.py)
-- [SEC EDGAR Python engine](.agents/skills/buffett-investor/scripts/edgar_buffett.py)
-- [Warren Buffett skill](.agents/skills/buffett-investor/SKILL.md)
-- [Benjamin Graham skill](.agents/skills/benjamin-graham-investor/SKILL.md)
-- [Michael Burry skill](.agents/skills/michael-burry-investor/SKILL.md)
-
-## Run in VS Code on Windows
-
-Open this workspace in VS Code, then use its integrated PowerShell terminal:
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-$env:SEC_USER_AGENT = "Your Name your.email@example.com"
-python .\.agents\skills\buffett-investor\scripts\edgar_buffett.py COST
-python .\.agents\skills\buffett-investor\scripts\edgar_buffett.py NVDA
-streamlit run app.py
-```
-
-If activation is blocked, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` in that terminal, then activate the environment again.
-
-## SEC EDGAR data rules
-
-- Uses the keyless SEC ticker directory and company-facts endpoints. Every SEC request requires `SEC_USER_AGENT` with a name and email.
-- Uses only `10-K` / `FY` facts. Flow measures must cover about 300–380 days; the script keeps the newest five actual fiscal-year-end dates and uses the latest filed fact when a fiscal end is duplicated.
-- Values are never estimated. Missing source facts remain `not found`; missing or undefined check inputs produce `not known`.
-- The script prints each selected XBRL tag and formula. The reported tags include revenue `RevenueFromContractWithCustomerExcludingAssessedTax`, then `Revenues`; net income `NetIncomeLoss`; operating cash flow `NetCashProvidedByUsedInOperatingActivities`; capital spending `PaymentsToAcquirePropertyPlantAndEquipment`, then `PaymentsToAcquireProductiveAssets`; and equity `StockholdersEquity`.
-
-## Lab 18 — Warren Buffett
-
-Lab 18 created the Buffett skill and the SEC EDGAR financial engine. It calculates ROE as net income divided by year-end equity and owner earnings as operating cash flow minus capital spending.
-
-The three Buffett checks are:
-
-1. ROE >= 15% every year.
-2. Owner earnings > 0 every year.
-3. Owner earnings grew from the first year to the last year.
-
-## Lab 19 — Legend Panel
-
-Lab 19 added Benjamin Graham and Michael Burry skills and extended the Streamlit app into a Legend Panel. The panel shows eight checks, three deterministic investor verdicts, and three editable memos side by side; each memo is validated so a numerical claim must match a value printed by the current Python report at its displayed precision.
-
-The script also retrieves three additional SEC XBRL facts: total liabilities `Liabilities`, current assets `AssetsCurrent`, and current liabilities `LiabilitiesCurrent`. These support the following screens:
-
-| Investor | Checks |
-| --- | --- |
-| Buffett | ROE >= 15%; positive owner earnings; owner-earnings growth |
-| Graham | Current ratio >= 2.0; positive net income every year; net-income growth |
-| Burry | Operating cash flow >= net income every year; latest liabilities <= 2 times equity |
-
-## Validation and examples
-
-- A live SEC EDGAR Costco (COST) run produced the expected checks: Buffett passed 3 of 3, Graham passed 2 of 3 because the latest current ratio was 1.06x, and Burry passed 2 of 2 with liabilities-to-equity of 1.49x. These results are calculated from SEC data rather than hardcoded.
-- I temporarily changed Graham's current-ratio cutoff from 2.0 to 1.0. Costco then passed all three Graham checks; after restoring the original 2.0 rule, it returned to 2 of 3 passes.
-- I ran NVIDIA (NVDA) for Project 2. Buffett and Graham each passed all of their checks; Burry passed the liabilities-to-equity screen at 0.31x but failed the operating-cash-flow-versus-net-income screen.
-- The unsupported-number validator successfully flagged `999.9` as an unsupported memo claim.
-
-## Tests
-
-Run the offline test suite without SEC requests:
-
-```powershell
-python -m unittest discover -s tests -v
-```
-
-The test suite covers check logic, missing values, latest-filing selection, investor verdicts, and unsupported numeric claims.
-
-## SEC disclaimer
-
-Data from SEC EDGAR; built with AI help, a learning demonstration, not investment advice. The SEC does not endorse this application or its analysis. Data may be incomplete, amended, or incorrectly tagged by filers; verify material conclusions against the original filings.
+[docs/validation-and-ai-use.md](docs/validation-and-ai-use.md) records executed
+validation evidence and contains the required blank Locked Changed-Input Record
+template. The student must personally write an AI-off prediction, commit it to
+GitHub, record its pre-run hash, and only then run the selected changed-input
+test. This repository does not provide that personal prediction or fabricated
+Git evidence.
