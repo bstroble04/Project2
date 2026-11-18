@@ -171,14 +171,14 @@ I predict that increasing the implementation cost from 10 bps to 20 bps will low
 
 | Field | Student entry |
 | --- | --- |
-| Decision being tested | |
-| Exact input to change | |
-| Original input | |
-| Changed input | |
-| Human-authored AI-off prediction | |
-| Predicted numerical effect | |
-| Predicted committee decision effect | |
-| Pre-run Git commit hash | |
+| Decision being tested | Whether the portfolio still meets the 6% net return objective after increasing implementation costs |
+| Exact input to change | Planning implementation cost |
+| Original input | 10 bps |
+| Changed input | 20 bps |
+| Human-authored AI-off prediction | I predict that increasing the implementation cost from 10 bps to 20 bps will lower the portfolio's net return because more money is being taken out for costs. I think this will make it harder for the portfolio to reach our 6% return goal. The app might also change the portfolio weights to try to make up for the higher cost. Overall, I expect the portfolio to perform a little worse with the higher cost, but I don't think the change will be huge. |
+| Predicted numerical effect | Increasing implementation costs from 10 bps to 20 bps adds 0.10 percentage points in annual costs. If the portfolio weights stay the same, its net expected return would decrease from around 6.05% to 5.95%, which is below the 6% objective. However, the app might adjust to make up for the additional costs. |
+| Predicted committee decision effect | Since it costs more to set up, the committee might not like this plan as much. If the money we make after costs is less than 6%, they might say no for now and ask us to change things or look at it again. Even if the app finds a new mix that hits our goal, it won't be a done deal until we double-check that it follows all the other rules. |
+| Pre-run Git commit hash | afa4a91526ae03f30e430e92ad880dcc2a36e2a4 |
 | Actual numerical result | |
 | Actual decision effect | |
 | Explanation of differences | |
