@@ -168,8 +168,7 @@ test fixtures. The repository's Project 2 suite contains 12 automated tests.
 ## Validation and Locked Changed-Input Record
 
 [docs/validation-and-ai-use.md](docs/validation-and-ai-use.md) records executed
-validation evidence and contains the required blank Locked Changed-Input Record
-template. The student must personally write an AI-off prediction, commit it to
-GitHub, record its pre-run hash, and only then run the selected changed-input
-test. This repository does not provide that personal prediction or fabricated
-Git evidence.
+validation evidence, including the completed Locked Changed-Input Record. The
+student's original AI-off prediction was committed before the 10-to-20-bps
+implementation-cost test; the record preserves the original prediction, actual
+results, comparison, and pre-run and post-run Git hashes.

@@ -120,16 +120,19 @@ recommendation, and final submission statement.
 - The application labels missing fund evidence `UNVERIFIED` rather than treating
   it as a pass.
 
-### Still required from the student
+### Student review and submission evidence
 
 - Review the final application, source documentation, and recommendation without
   relying on an AI statement as evidence of correctness.
 - The original AI-off Locked Changed-Input prediction below was committed before
   the test was run. The student subsequently ran the 20-bps test, recorded the
   actual results, and compared them with the original prediction.
-- The separate post-run Git commit and final GitHub verification remain pending.
+- The post-run Git commit is recorded in Section 9. Final fresh-clone
+  verification passed at commit `f5b83be1828b7caf46e1a6ccede2fd161a0d0b08`
+  with 12/12 tests passing.
 - Preserve the GitHub commit URL/hash and any instructor-required screenshots or
-  submission receipt. None are fabricated or recorded here.
+  submission receipt. These documentation edits are not represented as having
+  been included in that earlier fresh-clone verification commit.
 
 ## 8. Cold-run reproducibility
 
