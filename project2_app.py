@@ -102,20 +102,28 @@ with st.spinner("Verifying the selected ALFRED DGS10 vintage…"):
     signal = cached_dgs10_signal(decision_date.isoformat(), dgs10_threshold)
 
 st.header("Investment Mandate")
-columns = st.columns(4)
-columns[0].metric("Endowment assets", "$50.0m")
-columns[1].metric("Net annual objective", "6.00%")
-columns[2].metric("Minimum reserve", "4.00% BIL")
-columns[3].metric("Five-day liquidity", "85.00% minimum")
-st.write(
+mandate_metrics = st.columns(2)
+mandate_metrics[0].metric("Endowment assets", "$50.0m")
+mandate_metrics[1].metric("Net annual return objective", "6.00%")
+st.dataframe(
+    pd.DataFrame([
+        {"Mandate requirement": "Reserve allocation", "Requirement": "At least 4.00% in BIL"},
+        {"Mandate requirement": "Five-day liquidity", "Requirement": "At least 85.00% redeemable within five business days"},
+        {"Mandate requirement": "Single-company issuer exposure", "Requirement": f"No more than {ISSUER_LIMIT:.0%}"},
+        {"Mandate requirement": "Portfolio restrictions", "Requirement": "No borrowing, shorting, or derivatives; annual rebalancing; 25% turnover threshold"},
+    ]),
+    hide_index=True,
+    width="stretch",
+)
+st.caption(
     f"Universe: {', '.join(PROJECT2_TICKERS)}. Long-only {GRID_INCREMENT:.0%} grid. "
-    f"The actual mandate also sets a {ISSUER_LIMIT:.0%} single-company issuer limit, annual rebalancing, and a 25% turnover threshold."
+    "Items without dated, source-matched evidence remain UNVERIFIED."
 )
 
 st.header("Portfolio Comparison")
 rows = comparison_rows(analysis)
 st.dataframe(
-    pd.DataFrame(rows), hide_index=True, use_container_width=True,
+    pd.DataFrame(rows), hide_index=True, width="stretch",
     column_config={column: st.column_config.NumberColumn(format="%.2f%%") for column in rows[0] if column != "Portfolio"},
 )
 if analysis["infeasible_reason"]:
@@ -131,7 +139,7 @@ if current_portfolio:
         "Scenario weight": [weight * 100 for weight in current_portfolio["weights"]],
         "Weight change": [(scenario - baseline) * 100 for scenario, baseline in zip(current_portfolio["weights"], base_portfolio["weights"])],
     })
-    st.dataframe(changes, hide_index=True, use_container_width=True,
+    st.dataframe(changes, hide_index=True, width="stretch",
                  column_config={column: st.column_config.NumberColumn(format="%.2f%%") for column in changes.columns if column != "ETF"})
     metric_changes = {
         "Gross expected return": current_portfolio["expected_return"] - base_portfolio["expected_return"],
@@ -150,9 +158,61 @@ reference = pd.DataFrame({
     "Reported in lab15-notes.md": [weight * 100 for weight in reported_weights],
     "Recalculated 60-month / 0-bps": [weight * 100 for weight in base_portfolio["weights"]],
 })
-st.dataframe(reference, hide_index=True, use_container_width=True,
+st.dataframe(reference, hide_index=True, width="stretch",
              column_config={column: st.column_config.NumberColumn(format="%.2f%%") for column in reference.columns if column != "ETF"})
 st.caption("The zero-cost calculation reproduces the documented 70% BIL / 15% VTI / 15% VXUS allocation.")
+
+if annual_cost_bps == 20.0:
+    ten_bps_reference = run_project2_analysis(
+        PRICE_FILE,
+        annual_cost_bps=10.0,
+        use_last_36=period == "Last 36 monthly returns",
+        target_return=target_return,
+        minimum_reserve=reserve_minimum,
+        expected_return_adjustment_bps=return_adjustment_bps,
+        maximum_etf_weight=maximum_etf_weight,
+        prior_weights=prior_weights,
+    )
+    ten_bps_portfolio = ten_bps_reference["constrained"]
+    st.subheader("Selected 20-bps scenario compared with the 10-bps reference")
+    if ten_bps_portfolio and current_portfolio:
+        cost_comparison = pd.DataFrame([
+            {
+                "Scenario": "10-bps reference",
+                "Gross expected return": ten_bps_portfolio["expected_return"] * 100,
+                "Net expected return": ten_bps_portfolio["net_expected_return"] * 100,
+                "Annualized volatility": ten_bps_portfolio["volatility"] * 100,
+                "Reserve allocation": ten_bps_portfolio["reserve_weight"] * 100,
+            },
+            {
+                "Scenario": "Selected 20-bps scenario",
+                "Gross expected return": current_portfolio["expected_return"] * 100,
+                "Net expected return": current_portfolio["net_expected_return"] * 100,
+                "Annualized volatility": current_portfolio["volatility"] * 100,
+                "Reserve allocation": current_portfolio["reserve_weight"] * 100,
+            },
+        ])
+        st.dataframe(
+            cost_comparison,
+            hide_index=True,
+            width="stretch",
+            column_config={column: st.column_config.NumberColumn(format="%.2f%%") for column in cost_comparison.columns if column != "Scenario"},
+        )
+        cost_weight_comparison = pd.DataFrame({
+            "ETF": PROJECT2_TICKERS,
+            "10-bps reference": [weight * 100 for weight in ten_bps_portfolio["weights"]],
+            "Selected 20-bps scenario": [weight * 100 for weight in current_portfolio["weights"]],
+            "Weight change": [(selected - reference) * 100 for selected, reference in zip(current_portfolio["weights"], ten_bps_portfolio["weights"])],
+        })
+        st.dataframe(
+            cost_weight_comparison,
+            hide_index=True,
+            width="stretch",
+            column_config={column: st.column_config.NumberColumn(format="%.2f%%") for column in cost_weight_comparison.columns if column != "ETF"},
+        )
+        st.caption("Both scenarios use the same selected window, target, reserve, return adjustment, ETF cap, and prior-allocation input. Only the planning implementation-cost input differs.")
+    else:
+        st.warning("A 10-bps or selected 20-bps constrained portfolio is infeasible under the other selected scenario controls, so no cost comparison is available.")
 
 st.header("Source-Backed Fund Evidence")
 evidence_rows = [
@@ -171,7 +231,7 @@ evidence_rows = [
 ]
 st.caption(f"Official-source index retrieved {RETRIEVAL_DATE}. It does not convert later-viewed holdings into September 30, 2026 evidence.")
 st.dataframe(
-    pd.DataFrame(evidence_rows), hide_index=True, use_container_width=True,
+    pd.DataFrame(evidence_rows), hide_index=True, width="stretch",
     column_config={
         "Official source": st.column_config.LinkColumn("Official source", display_text="Sponsor page"),
         "Published expense ratio": st.column_config.NumberColumn(format="%.3f%%"),
@@ -190,19 +250,23 @@ st.header("Portfolio Weights, Risk, and Mandate Evidence")
 for portfolio in analysis["portfolios"]:
     with st.expander(portfolio["name"], expanded=portfolio["name"] == "Constrained 5% grid"):
         weight_frame = pd.DataFrame({"ETF": PROJECT2_TICKERS, "Weight": [weight * 100 for weight in portfolio["weights"]]})
-        st.bar_chart(weight_frame.set_index("ETF"), y="Weight", use_container_width=True)
-        st.dataframe(weight_frame, hide_index=True, use_container_width=True,
+        st.bar_chart(weight_frame.set_index("ETF"), y="Weight", width="stretch")
+        st.dataframe(weight_frame, hide_index=True, width="stretch",
                      column_config={"Weight": st.column_config.NumberColumn(format="%.2f%%")})
         st.caption(f"Worst monthly return in the selected sample: {portfolio['worst_month']:.2%}. Historical estimates are not forecasts.")
-        st.dataframe(pd.DataFrame(portfolio["checks"]), hide_index=True, use_container_width=True)
+        st.dataframe(pd.DataFrame(portfolio["checks"]), hide_index=True, width="stretch")
 
 st.header("Point-in-Time Signal")
 st.write("Proposed prospective rule: use the selected ALFRED DGS10 vintage. At or above the threshold, require committee review before authorizing a rebalance; otherwise the allocation is only eligible for committee review.")
-signal_columns = st.columns(4)
-signal_columns[0].metric("Signal status", signal["status"])
-signal_columns[1].metric("DGS10 observation", "—" if signal["value"] is None else f"{signal['value']:.2f}%")
-signal_columns[2].metric("Observation date", "—" if signal["observation_date"] is None else signal["observation_date"].isoformat())
-signal_columns[3].metric("Decision", signal["decision"])
+signal_columns = st.columns(2)
+with signal_columns[0]:
+    st.markdown("**Point-in-time signal status**")
+    st.write(signal["status"])
+    st.metric("DGS10 observation", "—" if signal["value"] is None else f"{signal['value']:.2f}%")
+with signal_columns[1]:
+    st.markdown("**Committee decision status**")
+    st.write(signal["decision"])
+    st.metric("Observation date", "—" if signal["observation_date"] is None else signal["observation_date"].isoformat())
 st.info(signal["reason"])
 st.caption(f"Decision/vintage cutoff: {signal['vintage_date']}. {signal['availability']}")
 with st.expander("DGS10 data card and limitations"):
@@ -223,7 +287,7 @@ for label, result in [("Lab 15 base reproduction", base), ("Lab 15 36-month repr
         "Volatility": portfolio["volatility"] * 100 if portfolio else None,
         "Reserve": portfolio["reserve_weight"] * 100 if portfolio else None,
     })
-st.dataframe(pd.DataFrame(stress_rows), hide_index=True, use_container_width=True,
+st.dataframe(pd.DataFrame(stress_rows), hide_index=True, width="stretch",
              column_config={column: st.column_config.NumberColumn(format="%.2f%%") for column in ["Gross return", "Net return", "Volatility", "Reserve"]})
 st.caption("The 36-month and 7% target outputs are computed live from `prices.csv`; they are not hardcoded labels. See the report for any rounding differences from Lab 15.")
 
