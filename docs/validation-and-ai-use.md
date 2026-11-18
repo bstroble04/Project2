@@ -61,20 +61,20 @@ adjusted historical ETF prices. See `project2_data_lineage.md`.
 | `test_return_adjustment_and_planning_cap_change_the_engine_inputs` | Apply -100 bps return-estimate adjustment and 65% planning ETF cap | The engine changes expected-return inputs; any feasible result respects the cap | Executed — PASS |
 | `test_infeasible_target_is_disclosed` | Raise net target to 50%, 0 bps | No feasible long-only 5% grid allocation; clear infeasibility reason | Executed — PASS |
 
-The Streamlit controls in `project2_app.py` expose the estimation window, 0/10
-bps implementation-cost scenarios, return-estimate adjustment, return target,
-reserve, and planning ETF cap. These are sensitivity scenarios, not forecasts.
+The Streamlit controls in `project2_app.py` expose the estimation window, 0, 10,
+and 20-bps implementation-cost scenarios (with 10 bps as the default),
+return-estimate adjustment, return target, reserve, and planning ETF cap. These
+are sensitivity scenarios, not forecasts.
+
+The student completed a 10-to-20-bps implementation-cost sensitivity test using
+all 60 monthly returns. See Section 9 for the locked prediction, actual results,
+and comparison.
 
 ### Still to perform
 
 The application does not yet include a source-backed market drawdown, spread,
 market-impact, or liquidity stress for the $50 million endowment. Such tests
 need documented inputs before they can be claimed as performed.
-
-The current `project2_app.py` implementation-cost control offers only **0 bps**
-and **10 bps**. A 20-bps changed-input test requires an input-control update
-before it can be run through the Streamlit app; no such update is made in this
-validation record.
 
 ## 5. Point-in-time signal validation
 
@@ -124,9 +124,10 @@ recommendation, and final submission statement.
 
 - Review the final application, source documentation, and recommendation without
   relying on an AI statement as evidence of correctness.
-- The Locked Changed-Input prediction below has been committed. The changed-input
-  test, actual-result record, post-run comparison, and post-run Git commit remain
-  pending.
+- The original AI-off Locked Changed-Input prediction below was committed before
+  the test was run. The student subsequently ran the 20-bps test, recorded the
+  actual results, and compared them with the original prediction.
+- The separate post-run Git commit and final GitHub verification remain pending.
 - Preserve the GitHub commit URL/hash and any instructor-required screenshots or
   submission receipt. None are fabricated or recorded here.
 
@@ -182,7 +183,9 @@ New Setting: 20 bps
 | Predicted committee decision effect | Since it costs more to set up, the committee might not like this plan as much. If the money we make after costs is less than 6%, they might say no for now and ask us to change things or look at it again. Even if the app finds a new mix that hits our goal, it won't be a done deal until we double-check that it follows all the other rules. |
 | Pre-run Git commit hash | f0bebeb2fab7be390b3998422e1c0c0a6920fbd9 |
 | Post-run Git commit hash | |
-| Actual numerical result | |
-| Actual decision effect | |
-| Explanation of differences | |
+| Actual numerical result | When I increased the implementation cost from 10 bps to 20 bps, the portfolio allocation changed. BIL stayed at 70%, while VTI increased from 20% to 25% and VXUS decreased from 10% to 5%. IEF and AGG both remained at 0%.
+The gross expected return increased from 6.15% to 6.31%, and the net expected return increased from 6.05% to 6.11%. Annualized volatility also increased slightly from 4.58% to 4.70%. The new portfolio still met the 6% net return objective. |
+| Actual decision effect | Even though the portfolio still met the 6% net return objective, the app displayed "STOP CONDITION TRIGGERED." The portfolio was not ready for committee approval because some required evidence was still unverified, including liquidity, issuer concentration, derivatives, turnover, and implementation costs. The point-in-time signal also required committee review. Therefore, the higher-cost portfolio could not be approved yet. |
+| Explanation of differences | My prediction was partly correct because I thought the app might change the portfolio weights to make up for the higher implementation cost, which it did. However, I predicted that the net expected return would decrease, and it actually increased from 6.05% to 6.11%.
+This happened because the app increased VTI and decreased VXUS, creating a portfolio with a higher gross expected return that more than offset the additional costs. The tradeoff was that volatility increased slightly. Overall, the portfolio performed better than I predicted based on expected return, but it still could not receive committee approval because of the missing evidence. |
 
