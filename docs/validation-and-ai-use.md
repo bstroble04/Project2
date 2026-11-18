@@ -71,6 +71,11 @@ The application does not yet include a source-backed market drawdown, spread,
 market-impact, or liquidity stress for the $50 million endowment. Such tests
 need documented inputs before they can be claimed as performed.
 
+The current `project2_app.py` implementation-cost control offers only **0 bps**
+and **10 bps**. A 20-bps changed-input test requires an input-control update
+before it can be run through the Streamlit app; no such update is made in this
+validation record.
+
 ## 5. Point-in-time signal validation
 
 ### Executed evidence
@@ -119,8 +124,9 @@ recommendation, and final submission statement.
 
 - Review the final application, source documentation, and recommendation without
   relying on an AI statement as evidence of correctness.
-- Complete the Locked Changed-Input Record below using an AI-off, human-authored
-  prediction before running the chosen change.
+- The Locked Changed-Input prediction below has been committed. The changed-input
+  test, actual-result record, post-run comparison, and post-run Git commit remain
+  pending.
 - Preserve the GitHub commit URL/hash and any instructor-required screenshots or
   submission receipt. None are fabricated or recorded here.
 
@@ -163,11 +169,7 @@ Current Setting: 10 bps
 
 New Setting: 20 bps
 
-My Prediction:
-
-I predict that increasing the implementation cost from 10 bps to 20 bps will lower the portfolio's net return because more money is being taken out for costs. I think this will make it harder for the portfolio to reach our 6% return goal. The app might also change the portfolio weights to try to make up for the higher cost. Overall, I expect the portfolio to perform a little worse with the higher cost, but I don't think the change will be huge.
-
-### Blank template
+### Locked Changed-Input Test Record
 
 | Field | Student entry |
 | --- | --- |
@@ -178,37 +180,9 @@ I predict that increasing the implementation cost from 10 bps to 20 bps will low
 | Human-authored AI-off prediction | I predict that increasing the implementation cost from 10 bps to 20 bps will lower the portfolio's net return because more money is being taken out for costs. I think this will make it harder for the portfolio to reach our 6% return goal. The app might also change the portfolio weights to try to make up for the higher cost. Overall, I expect the portfolio to perform a little worse with the higher cost, but I don't think the change will be huge. |
 | Predicted numerical effect | Increasing implementation costs from 10 bps to 20 bps adds 0.10 percentage points in annual costs. If the portfolio weights stay the same, its net expected return would decrease from around 6.05% to 5.95%, which is below the 6% objective. However, the app might adjust to make up for the additional costs. |
 | Predicted committee decision effect | Since it costs more to set up, the committee might not like this plan as much. If the money we make after costs is less than 6%, they might say no for now and ask us to change things or look at it again. Even if the app finds a new mix that hits our goal, it won't be a done deal until we double-check that it follows all the other rules. |
-| Pre-run Git commit hash | afa4a91526ae03f30e430e92ad880dcc2a36e2a4 |
+| Pre-run Git commit hash | f0bebeb2fab7be390b3998422e1c0c0a6920fbd9 |
+| Post-run Git commit hash | |
 | Actual numerical result | |
 | Actual decision effect | |
 | Explanation of differences | |
 
-### Locked-test workflow — student only
-
-1. Turn off or leave the AI tool and work without AI assistance.
-2. Select one supported application input and decide exactly what change you
-   will test. Do not run it yet.
-3. In the blank table above, write your own decision, exact original and changed
-   inputs, numerical prediction, and committee-decision prediction.
-4. Save this file. Use Git to add and commit **only after your prediction is
-   written**, for example:
-
-   ```powershell
-   git add docs/validation-and-ai-use.md
-   git commit -m "Lock Project 2 changed-input prediction"
-   git rev-parse HEAD
-   ```
-
-5. Copy the resulting commit hash into **Pre-run Git commit hash**. Push the
-   commit to GitHub if your instructor requires a remote timestamp or GitHub
-   evidence. Verify the commit exists before running the changed input.
-6. Only then run the single changed-input scenario in the application. Preserve
-   all other inputs and capture the actual allocation, gross/net return,
-   volatility, mandate statuses, signal/committee effect, and stop conditions.
-7. Fill in the three actual-result fields and explain any differences between
-   your prediction and the result. Do not alter the locked prediction fields.
-8. Commit the completed post-run record in a **new** commit. Keep both commits
-   available as evidence.
-
-No changed input was selected, predicted, run, or recorded while creating this
-template.

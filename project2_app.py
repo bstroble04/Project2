@@ -64,7 +64,7 @@ st.caption("Historical estimates from committed ETF prices. Learning demonstrati
 with st.sidebar:
     st.header("Interactive stress controls")
     period = st.radio("Historical estimation window", ["All 60 monthly returns", "Last 36 monthly returns"])
-    annual_cost_bps = st.select_slider("Planning transaction / implementation costs (bps)", options=[0.0, 10.0], value=0.0)
+    annual_cost_bps = st.select_slider("Planning transaction / implementation costs (bps)", options=[0.0, 10.0, 20.0], value=10.0)
     return_adjustment_bps = st.slider("Parallel expected-return estimate change (bps)", -300, 300, 0, 25)
     target_return = st.slider("Net annual return target (%)", 0.0, 15.0, 6.0, 0.5, format="%.1f%%") / 100
     reserve_minimum = st.slider("Minimum BIL reserve (%)", 0.0, 30.0, 4.0, 1.0, format="%.0f%%") / 100
