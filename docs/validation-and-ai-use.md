@@ -135,32 +135,46 @@ recommendation, and final submission statement.
 
 ### Executed evidence
 
-Python compilation and the offline tests were executed successfully:
+Stage 3 cold-run reproducibility verification was completed from a fresh GitHub
+clone at commit `f99b8d377c3bcb5897074fb7466bb6faf9083a4f`. The run used a
+separate temporary directory and isolated virtual environment; it did not reuse
+the project working directory or an existing virtual environment.
 
-```powershell
-python -m py_compile project2_engine.py project2_signal.py project2_fund_evidence.py project2_app.py app.py
-python -m unittest discover -s tests -v
-```
+| Check | Result |
+| --- | --- |
+| Fresh GitHub clone | PASS |
+| Isolated virtual environment | PASS |
+| Dependency installation from `requirements.txt` | PASS |
+| `pip check` | PASS — no broken requirements |
+| Python compilation | PASS — 9 Python files compiled |
+| Automated tests | PASS — 12/12 tests |
+| Streamlit startup | PASS — server started and returned HTTP 200 |
+| Streamlit default script execution | PASS — no runtime exceptions |
+| Default controls | PASS — all 60 monthly returns, 10-bps implementation cost, 6% net target, and 4% BIL reserve |
 
-The most recently documented result was compilation exit code 0 and 27 passing
-tests.
+The default constrained portfolio reproduced from the fresh clone was 70% BIL,
+0% IEF, 0% AGG, 20% VTI, and 10% VXUS. Its modeled gross expected return was
+6.1547%, modeled net expected return was 6.0547%, and annualized volatility was
+4.5804%.
 
-### Still to perform
+The point-in-time signal retrieved DGS10 at 5.26%, using the September 29, 2026
+observation and September 30, 2026 vintage cutoff. At the 5.00% threshold, the
+signal decision was `COMMITTEE REVIEW REQUIRED`. The final application decision
+reproduced as `STOP CONDITION TRIGGERED` because required mandate evidence
+remained unverified.
 
-A clean-machine or clean-virtual-environment cold run has not been represented
-as completed in this record. Complete it without modifying model inputs:
+The previously documented project-environment run of 27 tests remains separate
+evidence. The fresh clone contained and executed the 12 Project 2 tests available
+in that repository state.
 
-```powershell
-py -m venv .venv-project2-cold
-.\.venv-project2-cold\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
-streamlit run project2_app.py
-```
+### Documentation follow-up
 
-Record the Python version, package-install result, test output, application
-startup result, and any errors before making repairs. Do not call a cold run a
-validation pass until these facts have been captured by the student.
+The cold run identified broken links and outdated README descriptions. Those
+documentation issues were subsequently corrected in `README.md` and
+`docs/decision-memo.md`, and `lab15-notes.md` was added as supporting material.
+Those corrections have **not** been subjected to a second fresh-clone cold run;
+this record does not claim that additional verification.
+
 
 ## 9. Locked Changed-Input Record
 
