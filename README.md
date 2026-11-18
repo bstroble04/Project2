@@ -15,8 +15,8 @@ not forecasts or guarantees.
 
 ## Mandate and current committee position
 
-The endowment mandate is documented in [lab13.md](lab13.md) and
-[lab15-notes.md](lab15-notes.md):
+The Project 2 scholarship-endowment mandate and historical baseline are
+documented in [lab15-notes.md](lab15-notes.md):
 
 - $50 million endowment; 10-year horizon; $2 million annual scholarship need.
 - 6% annual return objective, **net of costs**.
@@ -64,8 +64,8 @@ requires committee review before authorizing a rebalance.
 - historical annualized arithmetic return estimates, volatility, correlations,
   reserve allocation, largest ETF allocation, and worst monthly return;
 - a long-only 5% grid constrained portfolio;
-- net expected return after a separately displayed 0- or 10-bps planning
-  implementation-cost scenario;
+- net expected return after a separately displayed 0-, 10-, or 20-bps planning
+  implementation-cost scenario (10 bps is the default);
 - portfolio turnover when a prior allocation is supplied.
 
 The 60-month, 0-bps historical calculation reproduces the allocation reported
@@ -119,7 +119,7 @@ limits, licensing considerations, and reproduction details, see
 [project2_app.py](project2_app.py) provides Streamlit controls for:
 
 - 60-month or 36-month historical estimation windows;
-- 0- or 10-bps planning implementation costs;
+- 0-, 10-, or 20-bps planning implementation costs (10 bps default);
 - parallel expected-return estimate changes;
 - return target, BIL reserve, and planning ETF-cap scenarios;
 - a prior approved allocation for turnover calculation;
@@ -162,8 +162,8 @@ python -m unittest discover -s tests -v
 
 The suite covers 60-month and 10-bps baseline reproduction, 36-month and 7%
 stress cases, infeasible optimization, point-in-time leakage and missing-data
-handling, mandate evidence gates, turnover, issuer-cap logic with controlled test
-fixtures, and the preserved SEC-app tests.
+handling, mandate evidence gates, turnover, and issuer-cap logic with controlled
+test fixtures. The repository's Project 2 suite contains 12 automated tests.
 
 ## Validation and Locked Changed-Input Record
 

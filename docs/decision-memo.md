@@ -21,7 +21,7 @@ This is a course artifact, not investment advice, an offer, or a recommendation 
 | Restrictions | No borrowing, shorting, or derivatives |
 | Rebalancing | Annual; 25% turnover threshold |
 
-The mandate is documented in [lab13.md](../lab13.md) and [lab15-notes.md](../lab15-notes.md). The engine returns `UNVERIFIED`, rather than a pass, when required evidence has not been supplied.
+The Project 2 scholarship-endowment mandate and historical baseline are documented in [lab15-notes.md](../lab15-notes.md). The engine returns `UNVERIFIED`, rather than a pass, when required evidence has not been supplied.
 
 ## 3. ETF universe and portfolio construction methodology
 
