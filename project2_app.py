@@ -24,6 +24,20 @@ def check_statuses(portfolio: dict | None) -> dict[str, str]:
     return {} if portfolio is None else {check["Rule"]: check["Status"] for check in portfolio["checks"]}
 
 
+def mandate_verdict(portfolio: dict) -> tuple[str, list[str], list[str], list[str]]:
+    """Summarize existing check results without treating missing evidence as a pass."""
+    failed = [check["Rule"] for check in portfolio["checks"] if check["Status"] == "FAIL"]
+    passed = [check["Rule"] for check in portfolio["checks"] if check["Status"] == "PASS"]
+    unverified = [check["Rule"] for check in portfolio["checks"] if check["Status"] == "UNVERIFIED"]
+    if failed:
+        verdict = "FAIL / NOT AUTHORIZED"
+    elif unverified:
+        verdict = "NOT AUTHORIZED — REQUIRED EVIDENCE UNVERIFIED"
+    else:
+        verdict = "PASS — ALL CHECKED MANDATE RULES PASS"
+    return verdict, failed, passed, unverified
+
+
 def stop_conditions(analysis: dict, signal: dict) -> list[str]:
     """State why an allocation cannot proceed to implementation."""
     conditions: list[str] = []
@@ -249,6 +263,11 @@ st.caption("Detailed dates, limitations, lineage, and reproduction instructions:
 st.header("Portfolio Weights, Risk, and Mandate Evidence")
 for portfolio in analysis["portfolios"]:
     with st.expander(portfolio["name"], expanded=portfolio["name"] == "Constrained 5% grid"):
+        verdict, failed, passed, unverified = mandate_verdict(portfolio)
+        st.markdown(f"**Overall mandate verdict: {verdict}**")
+        st.write("Definitive failed rule(s): " + ("; ".join(failed) if failed else "None."))
+        st.write("Passed rule(s): " + ("; ".join(passed) if passed else "None."))
+        st.write("Unverified required evidence: " + ("; ".join(unverified) if unverified else "None."))
         weight_frame = pd.DataFrame({"ETF": PROJECT2_TICKERS, "Weight": [weight * 100 for weight in portfolio["weights"]]})
         st.bar_chart(weight_frame.set_index("ETF"), y="Weight", width="stretch")
         st.dataframe(weight_frame, hide_index=True, width="stretch",

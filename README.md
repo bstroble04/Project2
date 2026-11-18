@@ -1,30 +1,39 @@
 # FIN 43900 Project 2 — Investment Management Application
 
+**AI-use disclosure:** ChatGPT and Codex assisted with code development,
+debugging, organization, and documentation. The analysis and investment decision
+are my own.
+
+**Educational-use disclosure:** This is educational analysis, not investment
+advice, an offer, or a recommendation to buy or sell securities.
+
 This repository contains my FIN 43900 Project 2 application for a fictional
 **$50 million university scholarship endowment**. The application evaluates
 historical ETF-based portfolio allocations against the documented mandate and
 clearly separates calculated results from evidence that has not yet been
 verified.
 
-**AI-use and educational disclosure:** AI assisted with code development,
-debugging, organization, and documentation. I remain responsible for reviewing
-the calculations, evidence, policy assumptions, and final investment judgment.
-This is a course project for educational purposes, not investment advice, an
-offer, or a recommendation to buy or sell securities. Historical estimates are
-not forecasts or guarantees.
+Historical estimates are not forecasts or guarantees.
 
 ## Mandate and current committee position
 
-The Project 2 scholarship-endowment mandate and historical baseline are
-documented in [lab15-notes.md](lab15-notes.md):
+The original Project 2 scholarship-endowment mandate is documented in the
+Project 2 section of [lab13.md](lab13.md); the historical baseline is documented
+in [lab15-notes.md](lab15-notes.md):
 
 - $50 million endowment; 10-year horizon; $2 million annual scholarship need.
-- 6% annual return objective, **net of costs**.
+- 6% annual return objective, **net of costs, over rolling five-year periods**.
 - Minimum 4% reserve allocation in BIL.
 - Minimum 85% five-business-day liquidity.
 - Maximum 10% exposure to any single company issuer.
 - No borrowing, shorting, or derivatives.
 - Annual rebalancing and a 25% turnover threshold.
+
+The original Project 2 mandate did not explicitly supply a benchmark or a formal
+risk measure. Annualized volatility and the minimum-volatility selection rule
+are transparent modeling choices used by this application, not mandate-specified
+requirements. The unrelated Meridian training mandate and its 60/40 benchmark
+are not used for this Project 2 decision.
 
 The app models long-only portfolios from BIL, IEF, AGG, VTI, and VXUS. It can
 verify weights, direct long-only positions, reserve allocation, modeled net
