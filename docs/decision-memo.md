@@ -71,6 +71,22 @@ The base scenario uses all 60 monthly returns, a 6% net target, a 4% BIL reserve
 
 The numerical model passes the 6% net objective and 4% reserve under these inputs. It does not resolve the evidence gates in Section 8.
 
+### Why this is the primary modeled candidate
+
+The optimization objective is **minimum modeled annualized volatility among
+feasible long-only 5% grid allocations**; it is not maximum expected return.
+At the same 10-bps planning cost, the 65% BIL / 25% VTI / 10% VXUS sensitivity
+case has a higher modeled net return, but also higher modeled volatility:
+
+| Tested allocation | Gross return | Net return | Annualized volatility | Interpretation |
+| --- | ---: | ---: | ---: | --- |
+| 70% BIL / 20% VTI / 10% VXUS | 6.15469301% | 6.05469301% | 4.58039146% | **Primary modeled candidate**: lowest-volatility feasible result selected by the documented objective. |
+| 65% BIL / 25% VTI / 10% VXUS | 6.63169058% | 6.53169058% | 5.35380169% | Higher-return sensitivity case, but not selected because its modeled volatility is higher. |
+
+Both results use the committed 60-month price file, the 6% net target, 4% BIL
+reserve, and 10-bps planning implementation-cost assumption. They are
+historical-model estimates, not forecasts or implementation authorization.
+
 ## 6. Stress tests and completed 10-to-20-bps implementation-cost sensitivity test
 
 [validation-and-ai-use.md](validation-and-ai-use.md) documents reproduction of the 60-month/0-bps and 60-month/10-bps cases, the 36-month stability case, the 7% target case, an infeasible 50% target, and the completed locked 10-to-20-bps implementation-cost sensitivity test.
@@ -126,10 +142,13 @@ The app displays **STOP CONDITION TRIGGERED** when required evidence remains unv
 
 ## 11. CONDITIONAL ALLOCATION RANGE
 
-The following range is restricted to the four tested 5%-grid combinations below.
-IEF and AGG are 0% in every combination, and total weights must equal 100%.
-These are not independently selectable ticker bands; no arbitrary combination
-within the individual BIL, VTI, and VXUS ranges qualifies.
+The following are four tested **sensitivity cases**, not four equally recommended
+or authorized portfolios. The 70% BIL / 20% VTI / 10% VXUS allocation remains
+the primary modeled candidate because it is selected by the minimum-volatility
+objective. Implementation remains deferred. IEF and AGG are 0% in every case,
+and total weights must equal 100%. These are not independently selectable ticker
+bands; no arbitrary combination within the individual BIL, VTI, and VXUS ranges
+qualifies.
 
 | BIL | IEF | AGG | VTI | VXUS | Net estimate at 10 bps |
 | ---: | ---: | ---: | ---: | ---: | ---: |

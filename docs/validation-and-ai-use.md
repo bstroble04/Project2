@@ -34,6 +34,39 @@ The Project 2 known-answer tests are in `tests/test_project2_engine.py`.
 These tests validate model calculations from the committed price snapshot. They
 do not validate future investment performance.
 
+### Independent numerical verification of the default candidate
+
+**Executed on 2026-11-19.** I independently recalculated the 70% BIL / 20% VTI
+/ 10% VXUS candidate directly from the committed `prices.csv` file using a
+short standalone Python calculation with only the standard-library `csv` and
+`math` modules. That calculation did **not** import or call
+`project2_engine.py` or its portfolio-output functions.
+
+Assumptions and formulas matched the documented model convention: 61 monthly
+adjusted-price rows produce 60 simple monthly returns; each ETF's expected
+annual return is its arithmetic mean monthly return multiplied by 12; gross
+portfolio return is `sum(weight × annual ETF estimate)`; and the 10-bps planning
+cost is `0.10%` (0.001 in decimal) subtracted once from gross return.
+
+| Active ETF | Weight | Independently calculated annual arithmetic estimate |
+| --- | ---: | ---: |
+| BIL | 70% | 3.59427928% |
+| VTI | 20% | 13.13423062% |
+| VXUS | 10% | 10.11851391% |
+
+Arithmetic:
+
+`Gross = (0.70 × 3.59427928%) + (0.20 × 13.13423062%) + (0.10 × 10.11851391%) = 6.15469301%`
+
+`Net = 6.15469301% − 0.10000000% = 6.05469301%`
+
+For comparison after the independent calculation, the existing engine/app
+calculation for the same committed file and 10-bps scenario returned gross
+6.15469301% and net 6.05469301%. The independently calculated values matched
+to the displayed eight decimal places. This verifies the arithmetic and stated
+cost subtraction for this candidate; it does not validate future performance,
+implementation costs, liquidity, issuer exposure, or investment suitability.
+
 ## 3. Baseline comparison tests
 
 ### Executed evidence
@@ -111,6 +144,19 @@ fund evidence currently meets the liquidity or issuer rules.
 The application and documentation were developed with AI assistance. The
 student remains responsible for reviewing every calculation, source claim,
 recommendation, and final submission statement.
+
+### Preserved original output and student disposition
+
+The original Codex response concerning the final documentation improvements is
+preserved verbatim in [ai-output-verification-2026-11-19.md](ai-output-verification-2026-11-19.md).
+The student personally checked the 70% BIL / 20% VTI / 10% VXUS weighted gross
+return (6.15469301%) and net return after 10 bps (6.05469301%) using a
+calculator and found agreement with the displayed Codex output to the displayed
+precision. The student's disposition is **ACCEPT WITH QUALIFICATIONS**: this
+confirms the checked return arithmetic, but does not verify future returns,
+actual costs, liquidity, issuer concentration, underlying derivatives, turnover,
+or implementation authorization. The final investment decision therefore
+remains **DEFER IMPLEMENTATION**.
 
 ### Executed evidence
 
